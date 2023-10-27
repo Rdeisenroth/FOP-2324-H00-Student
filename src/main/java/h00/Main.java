@@ -4,6 +4,9 @@ import fopbot.Robot;
 import fopbot.RobotFamily;
 import fopbot.World;
 
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
+
 import static fopbot.Direction.LEFT;
 import static fopbot.Direction.RIGHT;
 import static org.tudalgo.algoutils.student.Student.crash;
@@ -43,12 +46,23 @@ public class Main {
         Robot kaspar = new Robot(0, 0, LEFT, 20, RobotFamily.SQUARE_ORANGE);
         Robot alfred = new Robot(4, 4, RIGHT, 0, RobotFamily.SQUARE_BLUE);
 
+        Stream.<Runnable>of(
+            // turn to the right
+            () -> Stream.generate(kaspar::getDirection).takeWhile(d -> d != RIGHT).forEach(d -> kaspar.turnLeft()),
+            // move along lower border
+            () -> IntStream.range(1,World.getWidth()).forEach(i -> Stream.<Runnable>of(kaspar::putCoin, kaspar::move).forEach(Runnable::run)),
+            kaspar::turnLeft,
+            () -> IntStream.range(1,World.getHeight()).forEach(i -> Stream.<Runnable>of(kaspar::putCoin, kaspar::move).forEach(Runnable::run)),
+            kaspar::turnLeft,
+            kaspar::move
+        ).forEach(Runnable::run);
+
         // -- Kaspars's first act of craziness --
         // TODO: H4.1 - remove if implemented
-        crash();
+//        crash();
 
         // -- Alfred's try of heroism --
         // TODO: H4.2 - remove if implemented
-        crash();
+//        crash();
     }
 }
